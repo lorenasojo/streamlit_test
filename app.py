@@ -1,38 +1,27 @@
-import scipy.stats
+import pandas as pd
+import plotly.express as px
 import streamlit as st
-import time
 
-st.header('Lanzar una moneda')
+# título
+st.header('Análisis de vehículos usados')
 
-# gráfico inicial con 0.5
-chart = st.line_chart([0.5])
+# leer datos
+car_data = pd.read_csv('vehicles_us.csv')
 
-def toss_coin(n):
+# histograma
+st.write('Histograma de precios de vehículos')
 
-    trial_outcomes = scipy.stats.bernoulli.rvs(p=0.5, size=n)
+fig_hist = px.histogram(car_data, x="price")
 
-    mean = None
-    outcome_no = 0
-    outcome_1_count = 0
+st.plotly_chart(fig_hist)
 
-    for r in trial_outcomes:
-        outcome_no += 1
+# dispersión
+st.write('Relación entre kilometraje y precio')
 
-        if r == 1:
-            outcome_1_count += 1
+fig_scatter = px.scatter(
+    car_data,
+    x="odometer",
+    y="price"
+)
 
-        mean = outcome_1_count / outcome_no
-
-        chart.add_rows([mean])
-        time.sleep(0.05)
-
-    return mean
-
-
-number_of_trials = st.slider('¿Número de intentos?', 1, 1000, 10)
-start_button = st.button('Ejecutar')
-
-if start_button:
-    st.write(f'Experimento con {number_of_trials} intentos en curso.')
-    mean = toss_coin(number_of_trials)
-    
+st.plotly_chart(fig_scatter)
